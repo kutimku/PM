@@ -1,0 +1,271 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PM Permata</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #e6f2ff;
+        margin: 0;
+        padding: 15px;
+      }
+
+      .container {
+        max-width: 500px;
+        margin: auto;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+      }
+
+      h2 {
+        text-align: center;
+        margin-top: 0;
+      }
+      h3 {
+        text-align: center;
+        margin-top: 0;
+      }
+      input,
+      button {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        margin-top: 10px;
+        box-sizing: border-box;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+
+      button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #2980b9;
+      }
+
+      hr {
+        margin: 20px 0;
+      }
+
+      .card {
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        word-break: break-word;
+      }
+
+      th {
+        background: #f2f2f2;
+      }
+
+      #loading {
+        display: none;
+        text-align: center;
+        margin-top: 15px;
+      }
+
+      .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      #error {
+        color: red;
+        margin-top: 10px;
+        text-align: center;
+      }
+
+      .lunas {
+        color: green;
+        font-weight: bold;
+      }
+
+      .belum {
+        color: red;
+        font-weight: bold;
+      }
+
+      @media (max-width: 480px) {
+        h2 {
+          font-size: 18px;
+        }
+
+        table {
+          font-size: 13px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Kapling Permata Manshurin</h2>
+      <h3>Nota Elektronik</h3>
+
+      <input type="text" id="kode" placeholder="Masukkan ID Konsumen" />
+      <button onclick="cariData()">Cek Data</button>
+
+      <div id="loading">
+        <div class="spinner"></div>
+        <p>Memuat data...</p>
+      </div>
+
+      <div id="error"></div>
+
+      <div id="hasil" style="display: none">
+        <hr />
+
+        <div class="card">
+          <p><strong>Nama:</strong> <span id="nama"></span></p>
+          <p><strong>Kapling:</strong> <span id="kapling"></span></p>
+          <p><strong>Harga:</strong> <span id="harga"></span></p>
+          <p><strong>Total Bayar:</strong> <span id="total"></span></p>
+          <p><strong>Sisa:</strong> <span id="sisa"></span></p>
+          <p><strong>Status:</strong> <span id="status"></span></p>
+        </div>
+
+        <h3>Rincian Pembayaran</h3>
+
+        <div style="overflow-x: auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Jenis</th>
+                <th>Nominal</th>
+              </tr>
+            </thead>
+            <tbody id="rincian"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function formatRupiah(angka) {
+        return "Rp " + Number(angka).toLocaleString("id-ID");
+      }
+
+      function formatTanggal(tanggal) {
+        if (!tanggal) return "-";
+        return new Date(tanggal).toLocaleDateString("id-ID");
+      }
+
+      function cariData() {
+        var kode = document.getElementById("kode").value.trim();
+        var loading = document.getElementById("loading");
+        var errorDiv = document.getElementById("error");
+        var hasil = document.getElementById("hasil");
+
+        errorDiv.innerText = "";
+        hasil.style.display = "none";
+
+        if (!kode) {
+          errorDiv.innerText = "Masukkan kode konsumen dulu.";
+          return;
+        }
+
+        loading.style.display = "block";
+
+        var url =
+          "https://script.google.com/macros/s/AKfycbzrZaqtOmkfKAtNbew-1f9pypZeyxZy4kRAUotcsWShvyeChDTjpj--B5DNFn2wzC4f/exec?kode=" +
+          encodeURIComponent(kode);
+
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            loading.style.display = "none";
+
+            if (data.error) {
+              errorDiv.innerText = data.error;
+              return;
+            }
+
+            document.getElementById("nama").innerText = data.nama || "-";
+            document.getElementById("kapling").innerText = data.kapling || "-";
+            document.getElementById("harga").innerText = formatRupiah(
+              data.harga,
+            );
+            document.getElementById("total").innerText = formatRupiah(
+              data.total_bayar,
+            );
+            document.getElementById("sisa").innerText = formatRupiah(data.sisa);
+
+            var statusEl = document.getElementById("status");
+            if (Number(data.sisa) === 0) {
+              statusEl.innerText = "LUNAS";
+              statusEl.className = "lunas";
+            } else {
+              statusEl.innerText = "BELUM LUNAS";
+              statusEl.className = "belum";
+            }
+
+            var rincianHTML = "";
+
+            if (data.rincian_pembayaran && data.rincian_pembayaran.length > 0) {
+              data.rincian_pembayaran.forEach(function (item) {
+                rincianHTML += `
+                  <tr>
+                    <td>${formatTanggal(item.tanggal)}</td>
+                    <td>${item.jenis || "-"}</td>
+                    <td>${formatRupiah(item.nominal)}</td>
+                  </tr>
+                `;
+              });
+            } else {
+              rincianHTML = `
+                <tr>
+                  <td colspan="3">Belum ada pembayaran</td>
+                </tr>
+              `;
+            }
+
+            document.getElementById("rincian").innerHTML = rincianHTML;
+            hasil.style.display = "block";
+          })
+          .catch(() => {
+            loading.style.display = "none";
+            errorDiv.innerText = "Terjadi kesalahan koneksi.";
+          });
+      }
+    </script>
+  </body>
+</html>
