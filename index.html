@@ -61,15 +61,19 @@
 
     <script>
       function loadPage(pageUrl, btn) {
-        // Ganti isi iframe
-        document.getElementById("content-frame").src = pageUrl;
+        // Ambil elemen iframe
+        const frame = document.getElementById('content-frame');
+        
+        // Gunakan contentWindow.location.replace agar tidak menumpuk di History
+        frame.contentWindow.location.replace(pageUrl);
 
         // Update status tombol aktif
-        const buttons = document.querySelectorAll(".navbar button");
-        buttons.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-      }
+        const buttons = document.querySelectorAll('.navbar button');
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
     </script>
   </body>
 </html>
+
 
