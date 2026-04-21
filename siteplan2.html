@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KPM2 - Data Pemilik Kapling</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #e8f4f8;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .header {
+        background: linear-gradient(135deg, #1e6f3f, #0d3b21);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+      .header p {
+        font-size: 1.1em;
+        opacity: 0.9;
+      }
+      .content {
+        padding: 30px;
+      }
+      .info-box {
+        background: #f0f7ff;
+        border-left: 5px solid #1e6f3f;
+        padding: 15px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+      th {
+        background: #1e6f3f;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background: #f9f9f9;
+      }
+      .status-tersedia {
+        background: #d4edda;
+        color: #155724;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        display: inline-block;
+      }
+      .status-terjual {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        display: inline-block;
+      }
+      .status-booking {
+        background: #fff3cd;
+        color: #856404;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        display: inline-block;
+      }
+      .footer {
+        background: #2c3e50;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        font-size: 0.9em;
+      }
+      .contact {
+        margin-top: 30px;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+      }
+      .contact a {
+        color: #1e6f3f;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      @media (max-width: 768px) {
+        table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+          display: block;
+        }
+        th {
+          display: none;
+        }
+        tr {
+          margin-bottom: 15px;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+        }
+        td {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border: none;
+          border-bottom: 1px solid #eee;
+        }
+        td::before {
+          content: attr(data-label);
+          font-weight: bold;
+          width: 40%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🏘️ KPM2</h1>
+      </div>
+
+      <div class="content">
+        <div class="info-box">
+          <strong>📌 Informasi Proyek KPM2 dalam pengembangan</strong><br />
+        </div>
+
+      
+    </div>
+  </body>
+</html>
