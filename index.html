@@ -1,6 +1,10 @@
 <!doctype html>
 <html lang="id">
   <head>
+    <meta
+      http-equiv="refresh"
+      content="0; url=https://permata-manshurin.netlify.app/"
+    />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nota Kapling Permata Manshurin</title>
@@ -63,19 +67,16 @@
     <script>
       function loadPage(pageUrl, btn) {
         // Ambil elemen iframe
-        const frame = document.getElementById('content-frame');
-        
+        const frame = document.getElementById("content-frame");
+
         // Gunakan contentWindow.location.replace agar tidak menumpuk di History
         frame.contentWindow.location.replace(pageUrl);
 
         // Update status tombol aktif
-        const buttons = document.querySelectorAll('.navbar button');
-        buttons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
+        const buttons = document.querySelectorAll(".navbar button");
+        buttons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
     </script>
   </body>
 </html>
-
-
-
