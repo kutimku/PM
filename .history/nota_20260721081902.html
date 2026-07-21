@@ -3,15 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PM Permata</title>
+    <title>KPM</title>
 
     <style>
       body {
-        font-family: "Segoe UI", Arial, sans-serif; /* Font lebih modern */
+        font-family: "Segoe UI", Arial, sans-serif;
         background-color: #e6f2ff;
         margin: 0;
         padding: 15px;
-        /* Tambahan: Jarak aman bawah supaya baris terakhir kelihatan */
         padding-bottom: 80px;
         line-height: 1.5;
       }
@@ -21,7 +20,7 @@
         margin: auto;
         background: #ffffff;
         padding: 20px;
-        border-radius: 12px; /* Lebih halus */
+        border-radius: 12px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         box-sizing: border-box;
       }
@@ -40,7 +39,7 @@
         font-size: 16px;
         margin-top: 10px;
         box-sizing: border-box;
-        border-radius: 8px; /* Lebih seragam */
+        border-radius: 8px;
         border: 1px solid #ccc;
         outline: none;
       }
@@ -62,9 +61,8 @@
       button:hover {
         background-color: #2980b9;
       }
-
       button:active {
-        transform: scale(0.98); /* Efek saat ditekan di HP */
+        transform: scale(0.98);
       }
 
       hr {
@@ -101,7 +99,6 @@
         color: #333;
       }
 
-      /* Loading & Spinner */
       #loading {
         display: none;
         text-align: center;
@@ -138,34 +135,57 @@
         color: #27ae60;
         font-weight: bold;
       }
-
       .belum {
         color: #e74c3c;
         font-weight: bold;
       }
 
-      /* Perbaikan Responsive Mobile */
+      /* Tombol Simpan */
+      #btnSimpanWrapper {
+        display: none;
+        margin-top: 20px;
+      }
+
+      #btnSimpan {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        padding: 13px;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+        font-size: 15px;
+        cursor: pointer;
+        width: 100%;
+        transition: 0.3s;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        letter-spacing: 0.5px;
+      }
+
+      #btnSimpan:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      }
+      #btnSimpan:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+
       @media (max-width: 480px) {
         body {
           padding: 10px;
-          padding-bottom: 100px; /* Lebih lebar jarak bawah di HP */
+          padding-bottom: 100px;
         }
-
         .container {
           padding: 15px;
         }
-
         h2 {
           font-size: 20px;
         }
         h3 {
           font-size: 18px;
         }
-
         table {
           font-size: 13px;
         }
-
         input,
         button {
           font-size: 16px;
@@ -190,9 +210,9 @@
 
       <div id="error"></div>
 
+      <!-- Area hasil — yang akan di-screenshot -->
       <div id="hasil" style="display: none">
         <hr />
-
         <div class="card">
           <p><strong>Nama:</strong> <span id="nama"></span></p>
           <p><strong>Kapling:</strong> <span id="kapling"></span></p>
@@ -203,7 +223,6 @@
         </div>
 
         <h3>Rincian Pembayaran</h3>
-
         <div style="overflow-x: auto">
           <table>
             <thead>
@@ -217,7 +236,17 @@
           </table>
         </div>
       </div>
+
+      <!-- Tombol simpan — di LUAR #hasil agar tidak masuk screenshot -->
+      <div id="btnSimpanWrapper">
+        <button id="btnSimpan" onclick="simpanSebagaiGambar()">
+          💾 SIMPAN HASIL
+        </button>
+      </div>
     </div>
+
+    <!-- html2canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
     <script>
       function formatRupiah(angka) {
@@ -234,9 +263,11 @@
         var loading = document.getElementById("loading");
         var errorDiv = document.getElementById("error");
         var hasil = document.getElementById("hasil");
+        var btnWrapper = document.getElementById("btnSimpanWrapper");
 
         errorDiv.innerText = "";
         hasil.style.display = "none";
+        btnWrapper.style.display = "none";
 
         if (!kode) {
           errorDiv.innerText = "Masukkan kode konsumen dulu.";
@@ -279,7 +310,6 @@
             }
 
             var rincianHTML = "";
-
             if (data.rincian_pembayaran && data.rincian_pembayaran.length > 0) {
               data.rincian_pembayaran.forEach(function (item) {
                 rincianHTML += `
@@ -287,28 +317,91 @@
                     <td>${formatTanggal(item.tanggal)}</td>
                     <td>${item.jenis || "-"}</td>
                     <td>${formatRupiah(item.nominal)}</td>
-                  </tr>
-                `;
+                  </tr>`;
               });
             } else {
-              rincianHTML = `
-                <tr>
-                  <td colspan="3">Belum ada pembayaran</td>
-                </tr>
-              `;
+              rincianHTML = `<tr><td colspan="3">Belum ada pembayaran</td></tr>`;
             }
 
             document.getElementById("rincian").innerHTML = rincianHTML;
             hasil.style.display = "block";
+            btnWrapper.style.display = "block"; // tampilkan tombol simpan
           })
           .catch(() => {
             loading.style.display = "none";
             errorDiv.innerText = "Terjadi kesalahan koneksi.";
           });
       }
+
+      // ── SIMPAN SEBAGAI GAMBAR ────────────────────────────────
+      async function simpanSebagaiGambar() {
+        var btnSimpan = document.getElementById("btnSimpan");
+        var btnWrapper = document.getElementById("btnSimpanWrapper");
+        var element = document.getElementById("hasil");
+
+        if (!element || element.style.display === "none")
+          return alert("Tidak ada data untuk disimpan!");
+
+        var originalText = btnSimpan.innerHTML;
+        btnSimpan.innerHTML = "⏳ MENYIMPAN...";
+        btnSimpan.disabled = true;
+
+        // Sembunyikan tombol agar tidak masuk screenshot
+        btnWrapper.style.display = "none";
+
+        try {
+          var canvas = await html2canvas(element, {
+            scale: 2,
+            backgroundColor: "#ffffff",
+            logging: false,
+            useCORS: true,
+          });
+
+          // Kembalikan tombol sebelum download
+          btnWrapper.style.display = "block";
+
+          var timestamp = new Date()
+            .toISOString()
+            .slice(0, 19)
+            .replace(/:/g, "-");
+          var filename = "nota_kpm_" + timestamp + ".png";
+
+          // Blob + Object URL — kompatibel semua browser termasuk Edge
+          canvas.toBlob(function (blob) {
+            if (!blob) return alert("Gagal membuat gambar, coba lagi.");
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement("a");
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(function () {
+              document.body.removeChild(link);
+              URL.revokeObjectURL(url);
+            }, 1500);
+          }, "image/png");
+
+          btnSimpan.innerHTML = "✅ BERHASIL DISIMPAN!";
+          btnSimpan.style.background =
+            "linear-gradient(135deg, #059669 0%, #047857 100%)";
+
+          setTimeout(function () {
+            btnSimpan.innerHTML = originalText;
+            btnSimpan.disabled = false;
+            btnSimpan.style.background =
+              "linear-gradient(135deg, #10b981 0%, #059669 100%)";
+          }, 2500);
+        } catch (err) {
+          console.error(err);
+          btnWrapper.style.display = "block";
+          btnSimpan.innerHTML = "❌ GAGAL!";
+          setTimeout(function () {
+            btnSimpan.innerHTML = originalText;
+            btnSimpan.disabled = false;
+          }, 2000);
+          alert("Gagal menyimpan gambar: " + err.message);
+        }
+      }
     </script>
   </body>
 </html>
-
-
-
