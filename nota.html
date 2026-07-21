@@ -140,6 +140,27 @@
         font-weight: bold;
       }
 
+      /* Header screenshot — judul + kode konsumen */
+      #screenshot-header {
+        display: none;
+        text-align: center;
+        padding: 15px 0 5px;
+        border-bottom: 2px solid #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      #screenshot-header h2 {
+        margin: 0 0 4px;
+        font-size: 18px;
+        color: #2c3e50;
+      }
+
+      #screenshot-header p {
+        margin: 0;
+        font-size: 13px;
+        color: #666;
+      }
+
       /* Tombol Simpan */
       #btnSimpanWrapper {
         display: none;
@@ -197,47 +218,63 @@
 
   <body>
     <div class="container">
-      <h2>Kapling Permata Manshurin</h2>
-      <h3>Nota Elektronik</h3>
-
-      <input type="text" id="kode" placeholder="Masukkan ID Konsumen" />
-      <button onclick="cariData()">Cek Data</button>
-
-      <div id="loading">
-        <div class="spinner"></div>
-        <p>Memuat data...</p>
-      </div>
-
-      <div id="error"></div>
-
-      <!-- Area hasil — yang akan di-screenshot -->
-      <div id="hasil" style="display: none">
-        <hr />
-        <div class="card">
-          <p><strong>Nama:</strong> <span id="nama"></span></p>
-          <p><strong>Kapling:</strong> <span id="kapling"></span></p>
-          <p><strong>Harga:</strong> <span id="harga"></span></p>
-          <p><strong>Total Bayar:</strong> <span id="total"></span></p>
-          <p><strong>Sisa:</strong> <span id="sisa"></span></p>
-          <p><strong>Status:</strong> <span id="status"></span></p>
+      <!-- Area screenshot: mencakup judul, kode, dan hasil -->
+      <div id="area-screenshot">
+        <!-- Header judul selalu tampil di screenshot -->
+        <div id="screenshot-header">
+          <h2>🏡 Kapling Permata Manshurin</h2>
+          <p>Nota Elektronik</p>
+          <p
+            id="kode-tampil"
+            style="font-weight: bold; color: #2c3e50; margin-top: 4px"
+          ></p>
         </div>
 
-        <h3>Rincian Pembayaran</h3>
-        <div style="overflow-x: auto">
-          <table>
-            <thead>
-              <tr>
-                <th>Tanggal</th>
-                <th>Jenis</th>
-                <th>Nominal</th>
-              </tr>
-            </thead>
-            <tbody id="rincian"></tbody>
-          </table>
+        <!-- Judul normal (tampil di web, disembunyikan saat screenshot) -->
+        <div id="judul-web">
+          <h2>Kapling Permata Manshurin</h2>
+          <h3>Nota Elektronik</h3>
+        </div>
+
+        <input type="text" id="kode" placeholder="Masukkan ID Konsumen" />
+        <button onclick="cariData()">Cek Data</button>
+
+        <div id="loading">
+          <div class="spinner"></div>
+          <p>Memuat data...</p>
+        </div>
+
+        <div id="error"></div>
+
+        <div id="hasil" style="display: none">
+          <hr />
+          <div class="card">
+            <p><strong>Nama:</strong> <span id="nama"></span></p>
+            <p><strong>Kapling:</strong> <span id="kapling"></span></p>
+            <p><strong>Harga:</strong> <span id="harga"></span></p>
+            <p><strong>Total Bayar:</strong> <span id="total"></span></p>
+            <p><strong>Sisa:</strong> <span id="sisa"></span></p>
+            <p><strong>Status:</strong> <span id="status"></span></p>
+          </div>
+
+          <h3>Rincian Pembayaran</h3>
+          <div style="overflow-x: auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Jenis</th>
+                  <th>Nominal</th>
+                </tr>
+              </thead>
+              <tbody id="rincian"></tbody>
+            </table>
+          </div>
         </div>
       </div>
+      <!-- akhir area-screenshot -->
 
-      <!-- Tombol simpan — di LUAR #hasil agar tidak masuk screenshot -->
+      <!-- Tombol simpan — di LUAR area screenshot -->
       <div id="btnSimpanWrapper">
         <button id="btnSimpan" onclick="simpanSebagaiGambar()">
           💾 SIMPAN HASIL
@@ -245,7 +282,6 @@
       </div>
     </div>
 
-    <!-- html2canvas -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
     <script>
@@ -281,8 +317,10 @@
           encodeURIComponent(kode);
 
         fetch(url)
-          .then((response) => response.json())
-          .then((data) => {
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (data) {
             loading.style.display = "none";
 
             if (data.error) {
@@ -324,10 +362,15 @@
             }
 
             document.getElementById("rincian").innerHTML = rincianHTML;
+
+            // Isi kode di header screenshot
+            document.getElementById("kode-tampil").innerText =
+              "ID Konsumen: " + kode;
+
             hasil.style.display = "block";
-            btnWrapper.style.display = "block"; // tampilkan tombol simpan
+            btnWrapper.style.display = "block";
           })
-          .catch(() => {
+          .catch(function () {
             loading.style.display = "none";
             errorDiv.innerText = "Terjadi kesalahan koneksi.";
           });
@@ -337,28 +380,39 @@
       async function simpanSebagaiGambar() {
         var btnSimpan = document.getElementById("btnSimpan");
         var btnWrapper = document.getElementById("btnSimpanWrapper");
-        var element = document.getElementById("hasil");
-
-        if (!element || element.style.display === "none")
-          return alert("Tidak ada data untuk disimpan!");
+        var area = document.getElementById("area-screenshot");
+        var judulWeb = document.getElementById("judul-web");
+        var screenshotHeader = document.getElementById("screenshot-header");
+        var inputKode = document.getElementById("kode");
+        var btnCek = area.querySelector("button:not(#btnSimpan)");
 
         var originalText = btnSimpan.innerHTML;
         btnSimpan.innerHTML = "⏳ MENYIMPAN...";
         btnSimpan.disabled = true;
 
-        // Sembunyikan tombol agar tidak masuk screenshot
+        // Sembunyikan elemen yang tidak perlu di gambar
         btnWrapper.style.display = "none";
+        judulWeb.style.display = "none";
+        inputKode.style.display = "none";
+        btnCek.style.display = "none";
+
+        // Tampilkan header screenshot (judul + kode)
+        screenshotHeader.style.display = "block";
 
         try {
-          var canvas = await html2canvas(element, {
+          var canvas = await html2canvas(area, {
             scale: 2,
             backgroundColor: "#ffffff",
             logging: false,
             useCORS: true,
           });
 
-          // Kembalikan tombol sebelum download
+          // Kembalikan semua elemen
           btnWrapper.style.display = "block";
+          judulWeb.style.display = "block";
+          inputKode.style.display = "block";
+          btnCek.style.display = "block";
+          screenshotHeader.style.display = "none";
 
           var timestamp = new Date()
             .toISOString()
@@ -366,7 +420,6 @@
             .replace(/:/g, "-");
           var filename = "nota_kpm_" + timestamp + ".png";
 
-          // Blob + Object URL — kompatibel semua browser termasuk Edge
           canvas.toBlob(function (blob) {
             if (!blob) return alert("Gagal membuat gambar, coba lagi.");
             var url = URL.createObjectURL(blob);
@@ -393,7 +446,13 @@
           }, 2500);
         } catch (err) {
           console.error(err);
+          // Kembalikan semua elemen jika error
           btnWrapper.style.display = "block";
+          judulWeb.style.display = "block";
+          inputKode.style.display = "block";
+          btnCek.style.display = "block";
+          screenshotHeader.style.display = "none";
+
           btnSimpan.innerHTML = "❌ GAGAL!";
           setTimeout(function () {
             btnSimpan.innerHTML = originalText;
